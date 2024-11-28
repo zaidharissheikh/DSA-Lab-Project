@@ -1,6 +1,4 @@
 #pragma once
-#ifndef BST_H
-#define BST_H
 #include <iostream>
 using namespace std;
 
