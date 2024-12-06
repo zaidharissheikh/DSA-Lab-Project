@@ -35,16 +35,6 @@ struct MessageNode {
         : sender(sender), content(content), next(nullptr) {}
 };
 
-// Struct for Post to represent user posts
-struct Post {
-    string content;
-    time_t timestamp;
-    Post* next;
-
-    Post() {}
-    Post(const string& content)
-        : content(content), timestamp(time(nullptr)), next(nullptr) {}
-};
 
 
 class UserProfile {
@@ -55,7 +45,6 @@ public:
     time_t lastLogin;
     FriendNode* friends;
     MessageNode* messages;
-    Post* posts;
     UserProfile* next;
 
     Stack postStack;
@@ -63,7 +52,7 @@ public:
     messageStack mStack;
     FriendRequestQueue friendRequestQueue;
     Notifications notificationQueue;
-
+    BST searchHistory;
     // Static references to global Graph and HashTable (shared across all users)
     static Graph* relationshipsGraph;
     static HashTable* loginHashTable;

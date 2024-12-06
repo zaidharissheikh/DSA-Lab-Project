@@ -8,23 +8,20 @@ class UserProfile;
 
 class Graph {
 private:
-    int vertices;  // Number of vertices
-    UserProfile** adjMatrix;  // Adjacency matrix holding UserProfile pointers
+    int vertices;  // Number of vertices (users)
+    bool** adjMatrix;  // Adjacency matrix (edges between users)
+    UserProfile** userProfiles;  // Array to store pointers to user profiles
     std::string* usernames;  // Array of usernames corresponding to vertices
-    static int count;
+    static int count;  // Counter for the number of users
 
 public:
-    Graph(int vertices);  // Constructor
+    Graph(int vertices);  // Constructor to initialize the graph with a given number of vertices
     ~Graph();  // Destructor to free dynamically allocated memory
-    void addEdge(int u, int v);  // Adds an undirected edge between u and v
-    void addUserProfile(const std::string& username, UserProfile* user);  // Add user profile at a username
-    UserProfile* getUserProfile(const std::string& username);  // Retrieve user profile by username
-    void display() const;  // Displays the graph (for debugging)
-    void BFS(int start) const;  // Breadth-First Search starting from vertex `start`
-    void DFS(int start) const;  // Depth-First Search starting from vertex `start`
-
-    // Helper function for DFS to handle recursion
-    void DFSUtil(int start, bool* visited) const;
+    void addEdge(int u, int v);  // Adds a directed edge from user u to user v
+    void addUserProfile(const std::string& username, UserProfile* user);  // Adds a user profile at a specific vertex
+    UserProfile* getUserProfile(const std::string& username);  // Retrieves the UserProfile associated with a username
+    void display() const;  // Displays the graph (user profiles and their connections)
+    int getUserIndex(const std::string& username);  // Returns the index of a user based on their username
 };
 
-#endif
+#endif  // GRAPH_H

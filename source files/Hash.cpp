@@ -59,28 +59,6 @@ string HashTable::search(const string& username) const {
     return "";  // Return an empty string if username is not found
 }
 
-// Remove: Deletes a username-password pair
-void HashTable::remove(const string& username) {
-    int index = hashFunction(username);
-    Node_Hash* current = table[index];
-    Node_Hash* prev = nullptr;
-
-    while (current) {
-        if (current->username == username) {
-            if (prev) {
-                prev->next = current->next;  // Remove the node from the linked list
-            }
-            else {
-                table[index] = current->next;  // Update the head of the list
-            }
-            delete current;
-            return;
-        }
-        prev = current;
-        current = current->next;
-    }
-}
-
 // Display: Prints the hash table (for debugging)
 void HashTable::display() const {
     for (int i = 0; i < capacity; i++) {

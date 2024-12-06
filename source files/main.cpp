@@ -19,6 +19,7 @@ void searchUsers();
 void showFollowers();
 void viewNewsfeed();
 void showMessages();
+void viewSearchHistory();
 
 // Utility Functions
 void printColoredText(const string& text, const string& colorCode) {
@@ -35,7 +36,7 @@ void printBox(const string& title, const string menu[]) {
     printColoredText("+--------------------------------+\n", "35");
 }
 
-
+// driver code
 int main() {
     string welcomeMessage = "Welcome to Mini Instagram!";
     string menu[] = {
@@ -51,7 +52,8 @@ int main() {
         "10. Search Users",
         "11. Show Followers",
         "12. View Newsfeed",
-        "13. Exit",
+        "13. View Search history",
+        "14. Exit",
         ""
     };
 
@@ -83,13 +85,15 @@ int main() {
         case 10: searchUsers(); break;
         case 11: showFollowers(); break;
         case 12: viewNewsfeed(); break;
-        case 13: return 0;
+        case 13: viewSearchHistory(); break;
+        case 14: return 0;
         default: printColoredText("Invalid choice. Please try again.\n", "31");
         }
         cout << "\n";
     }
 }
 
+// main functions for each functionality
 void signup() {
     string name, password, city;
     cout << "Enter username: ";
@@ -190,51 +194,58 @@ void processFollowRequests() {
         printColoredText("You need to be logged in to process follow requests.\n", "33");
         return;
     }
-    if (currentUser->friendRequestQueue.isEmpty())
-    {
+    if (currentUser->friendRequestQueue.isEmpty()) {
         cout << "No pending requests." << endl;
     }
-    else
-    {
+    else {
         currentUser->friendRequestQueue.display();
         char ch;
         cout << "1. Accept oldest follow request\n2. Reject oldest follow request\n3. Accept All\n4. Reject All\n";
         cin >> ch;
         string fr, noti;
-        switch (ch)
-        {
-        case '1':
+        switch (ch) {
+        case '1': {
             fr = currentUser->friendRequestQueue.dequeue();
             currentUser->acceptFriendRequest(fr);
-            noti = "Follow requested accepted by " + currentUser->name;
+            noti = "Follow request accepted by " + currentUser->name;
             currentUser->searchUser(fr)->addNotification(noti);
+
+            // adding friendship as edges
+            int currentIndex = UserProfile::relationshipsGraph->getUserIndex(currentUser->name);
+            int friendIndex = UserProfile::relationshipsGraph->getUserIndex(fr);
+            if (currentIndex != -1 && friendIndex != -1) {
+                UserProfile::relationshipsGraph->addEdge(currentIndex, friendIndex);
+            }
+            UserProfile::relationshipsGraph->display();
             printColoredText("Request Accepted.\n", "32");
             break;
-        case '2':
+        }
+        case '2': {
             fr = currentUser->friendRequestQueue.dequeue();
-            noti = "Follow requested rejected by " + currentUser->name;
+            noti = "Follow request rejected by " + currentUser->name;
             currentUser->searchUser(fr)->addNotification(noti);
             printColoredText("Request Rejected.\n", "33");
             break;
-        case '3':
-            while (!currentUser->friendRequestQueue.isEmpty())
-            {
+        }
+        case '3': {
+            while (!currentUser->friendRequestQueue.isEmpty()) {
                 fr = currentUser->friendRequestQueue.dequeue();
                 currentUser->acceptFriendRequest(fr);
-                noti = "Follow requested accepted by " + currentUser->name;
+                noti = "Follow request accepted by " + currentUser->name;
                 currentUser->searchUser(fr)->addNotification(noti);
             }
             printColoredText("Requests Accepted.\n", "32");
             break;
-        case '4':
-            while (!currentUser->friendRequestQueue.isEmpty())
-            {
+        }
+        case '4': {
+            while (!currentUser->friendRequestQueue.isEmpty()) {
                 fr = currentUser->friendRequestQueue.dequeue();
-                noti = "Follow requested rejected by " + currentUser->name;
+                noti = "Follow request rejected by " + currentUser->name;
                 currentUser->searchUser(fr)->addNotification(noti);
             }
             printColoredText("Requests Rejected.\n", "32");
             break;
+        }
         default:
             cout << "Invalid choice." << endl;
         }
@@ -249,7 +260,6 @@ void addPost() {
 
     string content;
     cout << "Enter post content: ";
-    cin.ignore();
     getline(cin, content);
 
     // Simulate adding a post
@@ -314,6 +324,8 @@ void searchUsers() {
     cout << "Enter username to search: ";
     cin >> username;
 
+    currentUser->searchHistory.insert(username);
+
     UserProfile* user = currentUser->searchUser(username);
     if (user) {
         printColoredText("User found: " + user->name + " from " + user->city + ".\n", "32");
@@ -321,6 +333,10 @@ void searchUsers() {
     else {
         printColoredText("User not found.\n", "31");
     }
+}
+
+void viewSearchHistory() {
+    currentUser->searchHistory.preorder();
 }
 
 void showFollowers() {
@@ -345,12 +361,5 @@ void viewNewsfeed() {
     }
 
     // Simulate viewing newsfeed
-    Post* current = currentUser->posts;
-    cout << "Posts by " << currentUser->name << ":\n";
-    while (current) {
-        char buffer[26];
-        ctime_s(buffer, sizeof(buffer), &current->timestamp);
-        cout << current->content << " at " << buffer;
-        current = current->next;
-    }
+    currentUser->displayPosts();
 }

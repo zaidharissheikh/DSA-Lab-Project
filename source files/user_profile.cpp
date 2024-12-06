@@ -14,7 +14,7 @@ UserProfile::UserProfile() {
     lastLogin = time(nullptr);  // Initialize with current time
     friends = nullptr;
     messages = nullptr;
-    posts = nullptr;
+    //posts = nullptr;
     next = nullptr;
 
 }
@@ -39,23 +39,23 @@ UserProfile::~UserProfile() {
         delete temp;
     }
 
-    while (posts != nullptr) {
+ /*   while (posts != nullptr) {
         Post* temp = posts;
         posts = posts->next;
         delete temp;
-    }
+    }*/
 }
 
 // Function to add a post to the user's post stack
 void UserProfile::addPost(const string& content) {
-    Post* newPost = new Post();
+ /*   Post* newPost = new Post();
     newPost->content = content;
     newPost->timestamp = time(nullptr);
     newPost->next = posts;
-    posts = newPost;
+    posts = newPost;*/
 
     // Add to the stack for newsfeed or posts stack (if needed)
-    postStack.push(1);  // You can replace 1 with an actual post identifier if needed
+    postStack.push(content, time(nullptr));  // You can replace 1 with an actual post identifier if needed
 }
 
 // Function to add a friend request
@@ -102,20 +102,19 @@ void UserProfile::displayNotifications() {
     notificationQueue.clearNotifications();
 }
 
-// Function to display posts
+
 void UserProfile::displayPosts() {
-    Post* current = posts;
-    char buffer[26];
-    while (current != nullptr) {
-        std::cout << "Post: " << current->content << " (Posted at: " << ctime_s(buffer, sizeof(buffer), &current->timestamp) << ")" << std::endl;
-        current = current->next;
-    }
+        postStack.display();  
+        
 }
+
+
 
 UserProfile* UserProfile::searchUser(const string& username) {
     // First, search for the user in the Graph
     UserProfile* userProfile = relationshipsGraph->getUserProfile(username);
     if (userProfile) {
+
         return userProfile;  // User found in the Graph
     }
 

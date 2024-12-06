@@ -29,7 +29,6 @@ public:
 
     bool insert(const string& username, const string& password);  // Insert username-password pair
     string search(const string& username) const;                 // Search for a password by username
-    void remove(const string& username);                         // Remove username-password pair
     void display() const;                                        // Display the hash table (for debugging)
 };
 
